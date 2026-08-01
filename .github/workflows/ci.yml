@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, safety/file-enumeration-pinned]
   pull_request:
     branches: [main]
 
@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -c constraints-deployment.txt -e ".[dev]"
 
       - name: Lint
         run: ruff check src/

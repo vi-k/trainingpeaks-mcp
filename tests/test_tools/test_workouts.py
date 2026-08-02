@@ -178,20 +178,99 @@ class TestTpGetWorkout:
             (
                 APIResponse(
                     success=True,
-                    data={"workoutDeviceFileInfos": {}},
+                    data={"workoutDeviceFileInfos": None},
                 ),
                 False,
-                "DETAILS_MALFORMED_FILE_ARRAY",
+                "DETAILS_NULL_FILE_ARRAY",
                 0,
                 0,
             ),
             (
                 APIResponse(
                     success=True,
-                    data={"attachmentFileInfos": ["bad"]},
+                    data={"attachmentFileInfos": None},
                 ),
                 False,
-                "DETAILS_MALFORMED_FILE_ARRAY",
+                "DETAILS_NULL_FILE_ARRAY",
+                0,
+                0,
+            ),
+            (
+                APIResponse(
+                    success=True,
+                    data={"workoutDeviceFileInfos": {}},
+                ),
+                False,
+                "DETAILS_NON_ARRAY_FILE_FIELD",
+                0,
+                0,
+            ),
+            (
+                APIResponse(
+                    success=True,
+                    data={"attachmentFileInfos": "bad"},
+                ),
+                False,
+                "DETAILS_NON_ARRAY_FILE_FIELD",
+                0,
+                0,
+            ),
+            (
+                APIResponse(
+                    success=True,
+                    data={"workoutDeviceFileInfos": ["bad"]},
+                ),
+                False,
+                "DETAILS_NON_OBJECT_FILE_ENTRY",
+                0,
+                0,
+            ),
+            (
+                APIResponse(
+                    success=True,
+                    data={"attachmentFileInfos": [None]},
+                ),
+                False,
+                "DETAILS_NON_OBJECT_FILE_ENTRY",
+                0,
+                0,
+            ),
+            (
+                APIResponse(
+                    success=True,
+                    data={
+                        "workoutDeviceFileInfos": None,
+                        "attachmentFileInfos": {},
+                    },
+                ),
+                False,
+                "DETAILS_NON_ARRAY_FILE_FIELD",
+                0,
+                0,
+            ),
+            (
+                APIResponse(
+                    success=True,
+                    data={
+                        "workoutDeviceFileInfos": None,
+                        "attachmentFileInfos": ["bad"],
+                    },
+                ),
+                False,
+                "DETAILS_NON_OBJECT_FILE_ENTRY",
+                0,
+                0,
+            ),
+            (
+                APIResponse(
+                    success=True,
+                    data={
+                        "workoutDeviceFileInfos": ["bad"],
+                        "attachmentFileInfos": {},
+                    },
+                ),
+                False,
+                "DETAILS_NON_ARRAY_FILE_FIELD",
                 0,
                 0,
             ),

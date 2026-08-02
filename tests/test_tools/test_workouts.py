@@ -125,6 +125,63 @@ class TestTpGetWorkout:
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
+        ("completed", "actual_time", "expected"),
+        [
+            (None, None, False),
+            (False, None, False),
+            (True, None, True),
+            (None, 0, True),
+            (False, 0, True),
+        ],
+    )
+    async def test_get_workout_normalizes_completion_status(
+        self,
+        mock_api_responses,
+        completed,
+        actual_time,
+        expected,
+    ):
+        workout_data = dict(mock_api_responses["workout_detail"])
+        workout_data["completed"] = completed
+        workout_data["totalTime"] = actual_time
+        for field in (
+            "tssActual",
+            "if",
+            "distance",
+            "powerAverage",
+            "normalizedPowerActual",
+            "heartRateAverage",
+            "cadenceAverage",
+            "elevationGain",
+            "calories",
+        ):
+            workout_data[field] = None
+        workout_response = APIResponse(success=True, data=workout_data)
+        details_response = APIResponse(
+            success=True,
+            data={
+                "workoutDeviceFileInfos": [],
+                "attachmentFileInfos": [],
+            },
+        )
+
+        with patch("tp_mcp.tools.workouts.TPClient") as mock_client:
+            mock_instance = AsyncMock()
+            mock_instance.ensure_athlete_id = AsyncMock(return_value=123)
+            mock_instance.get = AsyncMock(
+                side_effect=[workout_response, details_response]
+            )
+            mock_client.return_value.__aenter__.return_value = mock_instance
+
+            result = await tp_get_workout("1001")
+
+        assert result["completed"] is expected
+        assert result["file_enumeration_succeeded"] is True
+        assert result["device_files"] == []
+        assert result["attachment_files"] == []
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
         (
             "details_response",
             "expected_provenance",
